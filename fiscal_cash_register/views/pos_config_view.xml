@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<!--    Inherited pos config for adding image field-->
+	<record id="pos_config_view_form" model="ir.ui.view">
+		<field name="name">pos.config.view.form.inherit.point.of.sale.logo</field>
+		<field name="model">pos.config</field>
+		<field name="inherit_id" ref="point_of_sale.pos_config_view_form" />
+		<field name="arch" type="xml">           
+            <!-- Add Fiscal Integration Configuration inside the sheet -->
+            <xpath expr="//sheet" position="inside">
+                <div class="fiscal-config-section">
+                    
+                    
+                    <div class="fiscal-config-content">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="fiscal-field-group">
+                                    <div class="fiscal-field-label o_form_label">Integration Method</div>
+                                    <field name="fiscal_integration_method" widget="selection" class="fiscal-radio-group"/>
+                                </div>
+                            </div>
+                           
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="fiscal-field-group">
+                                    <div class="fiscal-field-label o_form_label">API Endpoint</div>
+                                    <field name="fiscal_api_endpoint" 
+                                           invisible="fiscal_integration_method != 'api_integration'" 
+                                           required="fiscal_integration_method == 'api_integration'"
+                                           class="fiscal-input"/>
+                                 </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="fiscal-field-group">
+                                     <field name="fiscal_printer_output_dir" 
+                                           invisible="fiscal_integration_method != 'local_file'" 
+                                           required="fiscal_integration_method == 'local_file'"
+                                           class="fiscal-input"/>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </xpath>
+            
+		</field>
+	</record>
+
+</odoo>

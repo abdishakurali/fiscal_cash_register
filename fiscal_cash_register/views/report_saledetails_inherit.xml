@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_saledetails_inherit" inherit_id="point_of_sale.pos_session_sales_details">
+        <xpath expr="//div[hasclass('page')]" position="replace">
+            <div class="page">
+                <div class="text-center" style="break-inside: avoid;">
+                    <t t-if="state == 'multiple'">
+                        <h2>Sales Details</h2>
+                        <div class="oe_structure" />
+                        <t t-if="config_names">
+                            <strong>Config names</strong>
+                            <t t-foreach="config_names" t-as="name">
+                                <span t-out="name">Sample Config Name</span>, </t>
+                        </t>
+                    </t>
+                    <t t-else="">
+                        <h2 t-if="state == 'closed' or state == 'opened'">Registrul de Casa <t
+                                t-if="state == 'closed'">Z</t>
+                            <t t-else="">X</t>
+                        </h2>
+                        <div class="oe_structure" />
+                        <t t-if="session_name"> Session ID: <span t-out="session_name">987657</span>
+                        </t>
+                    </t>
+                    <br />
+                    <t t-if="date_start and date_stop">
+                        <span t-out="date_start" t-options="{'widget': 'datetime'}">2-03-2000 9:00
+                            AM</span> - <span t-out="date_stop" t-options="{'widget': 'datetime'}">Demo
+                        3-03-2000 5:00 PM</span>
+                    </t>
+                </div>
+                <br />
+                <br />
+                <div class="oe_structure" />
+
+                <!-- Orderlines -->
+
+                <div class="oe_structure" />
+
+                <br />
+                <div class="oe_structure" />
+                <br />
+                <br />
+                <div class="oe_structure" />
+            </div>
+            <br />
+            <br />
+            <div class="oe_structure" />
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th>Nr. crt</th>
+                        <th>Data</th>
+                        <th>Nr. act. casa</th>
+                        <th>Nr. anexa</th>
+                        <th>Explicație</th>
+                        <th class="text-end">Încasări</th>
+                        <th class="text-end">Plăți</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Sold Inițial -->
+                    <tr>
+                        <td></td>
+                        <td>
+                            <span t-out="current_date" />
+                        </td>
+                        <td></td>
+                        <td></td>
+                        <td>
+                            <strong>Sold inițial</strong>
+                        </td>
+                        <td class="text-end">
+                            <span t-out="format_amount(opening_balance, currency)" />
+                        </td>
+                        <td></td>
+                    </tr>
+
+                    <!-- Rulaje -->
+                    <t t-set="row_index" t-value="1" />
+                    <t t-foreach="payments" t-as="method">
+                        <t t-if="method['cash_moves']">
+                            <t t-foreach="method['cash_moves']" t-as="move">
+                                <tr>
+                                    <td>
+                                        <span t-out="row_index" />
+                                    </td>
+                                    <td>
+                                        <span t-out="current_date" />
+                                    </td>
+                                    <td>
+                                        <span t-out="method['name']" />
+                                    </td>
+                                    <td></td>
+                                    <td>
+                                        <span t-out="move['reason']" />
+                                    </td>
+
+                                    <!-- Încasări if positive -->
+                                    <td class="text-end">
+                                        <t t-if="move['amount'] &gt; 0">
+                                            <span t-out="format_amount(move['amount'], currency)" />
+                                        </t>
+                                    </td>
+
+                                    <!-- Plăți if negative -->
+                                    <td class="text-end">
+                                        <t t-if="move['amount'] &lt; 0">
+                                            <span t-out="format_amount(-move['amount'], currency)" />
+                                        </t>
+                                    </td>
+                                </tr>
+                                <t t-set="row_index" t-value="row_index + 1" />
+                            </t>
+                        </t>
+                    </t>
+
+                    <!-- Rulaj zi -->
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>
+                            <strong>Rulaj zi</strong>
+                        </td>
+                        <td class="text-end">
+                            <span t-out="format_amount(total_incasari, currency)" />
+                        </td>
+                        <td class="text-end">
+                            <span t-out="format_amount(total_plati, currency)" />
+                        </td>
+                    </tr>
+
+                    <!-- Sold Final -->
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>
+                            <strong>Sold final</strong>
+                        </td>
+                        <td class="text-end" colspan="2">
+                            <span
+                                t-out="format_amount(opening_balance + total_incasari - total_plati, currency)" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="oe_structure" />
+
+        </xpath>
+    </template>
+</odoo>

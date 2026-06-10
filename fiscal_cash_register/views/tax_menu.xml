@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <menuitem id="menu_point_config_product" groups=""/>
+        <menuitem id="pos_taxes_menu" name="Taxes" parent="point_of_sale.menu_point_config_product" action="account.action_tax_form" groups="" sequence="10"/>
+    </data>
+</odoo>

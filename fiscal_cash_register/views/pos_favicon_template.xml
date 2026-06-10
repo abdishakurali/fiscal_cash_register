@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Override the POS index template to set custom favicon -->
+        <template id="pos_index_favicon_override" inherit_id="point_of_sale.index" name="Franchise Tech POS Favicon">
+            <xpath expr="//link[@rel='shortcut icon' and @href='/point_of_sale/static/src/img/favicon.ico']" position="replace">
+                <link rel="shortcut icon" t-attf-href="/web/image?model=res.company&amp;field=favicon&amp;id={{ res_company.id }}" type="image/x-icon"/>
+            </xpath>
+        </template>
+    </data>
+</odoo>

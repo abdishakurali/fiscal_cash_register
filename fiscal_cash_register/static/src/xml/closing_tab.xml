@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-inherit="point_of_sale.ClosePosPopup" t-inherit-mode="extension">
+        <xpath expr="//button[@t-on-click='downloadSalesReport']" position="before">
+            <button type="button" class="button btn btn-lg btn-primary"
+                    t-on-click="fiscalnetreport">
+                Z-Report
+                <i class="fa fa-download" role="img"/>
+            </button>
+            <button type="button" class="button btn btn-lg btn-primary"
+                    t-on-click="cashinoutreport">
+                Registrul De Casa
+                <i class="fa fa-download" role="img"/>
+            </button>
+        </xpath>
+        <xpath expr="//button[@t-on-click='downloadSalesReport']" position="replace">
+            <button class="button icon btn btn-secondary"
+                    t-on-click="downloadSalesReport"
+                    t-att-class="this.ui.isSmall ? 'w-100' : 'btn-lg ms-auto'"
+                    title="Download a report with all the sales of the current Franchise Tech Session">
+                ReportStandard
+                <i t-if="!this.ui.isSmall" class="fa fa-download" role="img"/>
+            </button>
+        </xpath>
+    </t>
+</templates>

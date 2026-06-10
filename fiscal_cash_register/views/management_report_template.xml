@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ── Report action ─────────────────────────────────────────────── -->
+        <record id="action_management_report" model="ir.actions.report">
+            <field name="name">Raport de gestiune</field>
+            <field name="model">res.company</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">fiscal_cash_register.management_report_template</field>
+            <field name="report_file">fiscal_cash_register.management_report_template</field>
+        </record>
+
+        <!-- ── QWeb template ─────────────────────────────────────────────── -->
+        <template id="management_report_template">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <div class="page">
+
+                        <style>
+                            /* ── Encoding / font ──────────────────────────── */
+                            * {
+                                font-family: "DejaVu Sans", Arial, sans-serif;
+                                box-sizing: border-box;
+                            }
+
+                            /* ── Page layout ──────────────────────────────── */
+                            @page {
+                                size: A4 landscape;
+                                margin: 10mm 8mm;
+                            }
+
+                            /* ── Company header block ─────────────────────── */
+                            .rg-header {
+                                display: table;
+                                width: 100%;
+                                margin-bottom: 6px;
+                                font-size: 9px;
+                            }
+                            .rg-header-left,
+                            .rg-header-right {
+                                display: table-cell;
+                                width: 50%;
+                                vertical-align: top;
+                            }
+                            .rg-header-right { text-align: right; }
+                            .company-name {
+                                color: #0055aa;
+                                font-weight: bold;
+                                font-size: 11px;
+                            }
+
+                            /* ── Report title ─────────────────────────────── */
+                            .rg-title {
+                                text-align: center;
+                                font-size: 13px;
+                                font-weight: bold;
+                                margin: 8px 0 2px 0;
+                            }
+                            .rg-period {
+                                text-align: center;
+                                font-size: 10px;
+                                margin-bottom: 6px;
+                            }
+
+                            /* ── Main table ───────────────────────────────── */
+                            .rg-table {
+                                width: 100%;
+                                border-collapse: collapse;
+                                font-size: 8px;
+                            }
+                            .rg-table th,
+                            .rg-table td {
+                                border: 1px solid #333;
+                                padding: 2px 3px;
+                            }
+                            /* Column headers ── render ONCE per page via thead */
+                            .rg-table thead th {
+                                background-color: #e8e8e8;
+                                font-weight: bold;
+                                text-align: center;
+                                font-size: 8px;
+                            }
+                            /* Prevent a row from being split across two pages */
+                            .rg-table tbody tr {
+                                page-break-inside: avoid;
+                            }
+
+                            /* ── Cell alignment helpers ───────────────────── */
+                            .c  { text-align: center; }
+                            .r  { text-align: right;  }
+                            .b  { font-weight: bold;  }
+
+                            /* Date cells preserve the \n as a visual line break */
+                            .date-cell {
+                                text-align: center;
+                                white-space: pre-wrap;
+                                font-size: 7px;
+                            }
+
+                            /* ── Summary rows ─────────────────────────────── */
+                            .rg-summary td {
+                                background-color: #f5f5f5;
+                                font-weight: bold;
+                            }
+
+                            /* ── Footer ───────────────────────────────────── */
+                            .rg-footer {
+                                margin-top: 12px;
+                                font-size: 7px;
+                                text-align: center;
+                                color: #555;
+                            }
+                        </style>
+
+                        <!-- ── Company / report header ──────────────────── -->
+                        <div class="rg-header">
+                            <div class="rg-header-left">
+                                <div>
+                                    <strong>Unitatea:</strong>
+                                    <span class="company-name" t-esc="company.name"/>
+                                </div>
+                                <div>
+                                    <strong>CUI:</strong>
+                                    <span t-esc="company.vat or 'N/A'"/>
+                                </div>
+                                <div>
+                                    <strong>RC:</strong>
+                                    <span t-esc="company.company_registry or 'N/A'"/>
+                                </div>
+                            </div>
+                            <div class="rg-header-right">
+                                <div>
+                                    <strong>Raport realizat cu:</strong>
+                                    <span t-esc="company.name"/>
+                                </div>
+                                <div>
+                                    <strong>POS Config:</strong>
+                                    <span t-esc="pos_config_name"/>
+                                </div>
+                                <div>
+                                    <strong>Generat de:</strong>
+                                    <span t-esc="user.name"/>
+                                </div>
+                                <div>
+                                    <strong>Data:</strong>
+                                    <span t-esc="generated_date.strftime('%d/%m/%Y %H:%M:%S')"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ── Report title ──────────────────────────────── -->
+                        <div class="rg-title">
+                            RAPORT DE GESTIUNE (TVA
+                            <t t-foreach="all_tax_rates" t-as="tr_item">
+                                <t t-if="not tr_item_first"> / </t>
+                                <t t-esc="tr_item.amount"/>%
+                            </t>
+                            )
+                        </div>
+                        <div class="rg-period">
+                            <strong>Perioada:</strong>
+                            <t t-esc="date_from.strftime('%d.%m.%Y') if date_from else ''"/>
+                            -
+                            <t t-esc="date_to.strftime('%d.%m.%Y') if date_to else ''"/>
+                        </div>
+
+                        <!-- ── Main grid ─────────────────────────────────── -->
+                        <table class="rg-table">
+
+                            <!--
+                                thead repeats automatically on every PDF page.
+                                It is written ONCE here and never duplicated in tbody.
+                            -->
+                            <thead>
+                                <tr>
+                                    <th rowspan="2" style="width:110px">Document</th>
+                                    <th rowspan="2" style="width:70px">Data</th>
+                                    <th rowspan="2">Descriere</th>
+                                    <th rowspan="2" style="width:60px">Intrari</th>
+                                    <th rowspan="2" style="width:60px">Iesiri</th>
+                                    <th rowspan="2" style="width:45px">Discount</th>
+                                    <t t-if="all_tax_rates"
+                                       t-att-colspan="len(all_tax_rates)">
+                                        <th>Produse cu TVA</th>
+                                    </t>
+                                </tr>
+                                <tr>
+                                    <t t-foreach="all_tax_rates" t-as="tr_item">
+                                        <th style="width:60px">
+                                            <t t-esc="tr_item.amount"/>%
+                                        </th>
+                                    </t>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                <!-- ── Stoc initial ──────────────────────── -->
+                                <tr class="rg-summary">
+                                    <td colspan="3" class="b">
+                                        Stoc initial (valoare de vanzare cu TVA)
+                                    </td>
+                                    <td class="r b">
+                                        <t t-esc="'%.2f' % report_data['stock_summary']['initial_stock']"/>
+                                    </td>
+                                    <td/><td/>
+                                    <!-- VAT columns: value in last column, empty others -->
+                                    <t t-foreach="all_tax_rates" t-as="tr_item">
+                                        <td class="r" t-if="tr_item_last">
+                                            <t t-esc="'%.2f' % report_data['stock_summary']['initial_stock']"/>
+                                        </td>
+                                        <td t-else=""/>
+                                    </t>
+                                </tr>
+
+                                <!-- ── Transaction rows ──────────────────── -->
+                                <t t-foreach="report_data['transactions']" t-as="tx">
+                                    <tr>
+                                        <td class="c">
+                                            <t t-esc="tx['document']"/>
+                                        </td>
+                                        <td class="date-cell">
+                                            <t t-esc="tx.get('date', '')"/>
+                                        </td>
+                                        <td>
+                                            <t t-esc="tx['description']"/>
+                                        </td>
+                                        <td class="r">
+                                            <t t-if="tx['intrari']">
+                                                <t t-esc="'%.2f' % tx['intrari']"/>
+                                            </t>
+                                        </td>
+                                        <td class="r">
+                                            <t t-if="tx['iesiri']">
+                                                <t t-esc="'%.2f' % tx['iesiri']"/>
+                                            </t>
+                                        </td>
+                                        <td class="r">
+                                            <t t-if="tx.get('discount', 0)">
+                                                <t t-esc="'%.2f' % tx['discount']"/>
+                                            </t>
+                                        </td>
+                                        <t t-foreach="all_tax_rates" t-as="tr_item">
+                                            <t t-set="vk" t-value="'vat_%d' % int(tr_item.amount)"/>
+                                            <td class="r">
+                                                <t t-if="tx.get(vk, 0)">
+                                                    <t t-esc="'%.2f' % tx[vk]"/>
+                                                </t>
+                                            </td>
+                                        </t>
+                                    </tr>
+                                </t>
+
+                                <!-- ── TOTAL row ─────────────────────────── -->
+                                <tr class="rg-summary">
+                                    <td colspan="3" class="b">TOTAL</td>
+                                    <td class="r b">
+                                        <t t-esc="'%.2f' % report_data['totals']['intrari']"/>
+                                    </td>
+                                    <td class="r b">
+                                        <t t-esc="'%.2f' % report_data['totals']['iesiri']"/>
+                                    </td>
+                                    <td class="r b">
+                                        <t t-esc="'%.2f' % report_data['totals'].get('discount', 0)"/>
+                                    </td>
+                                    <t t-foreach="all_tax_rates" t-as="tr_item">
+                                        <t t-set="vk" t-value="'vat_%d' % int(tr_item.amount)"/>
+                                        <td class="r b">
+                                            <t t-esc="'%.2f' % report_data['totals'].get(vk, 0)"/>
+                                        </td>
+                                    </t>
+                                </tr>
+
+                                <!-- ── Stoc final ─────────────────────────── -->
+                                <tr class="rg-summary">
+                                    <td colspan="3" class="b">
+                                        Stoc final (valoare de vanzare cu TVA)
+                                    </td>
+                                    <td class="r b">
+                                        <t t-esc="'%.2f' % report_data['stock_summary']['final_stock']"/>
+                                    </td>
+                                    <td/><td/>
+                                    <t t-foreach="all_tax_rates" t-as="tr_item">
+                                        <td class="r b" t-if="tr_item_last">
+                                            <t t-esc="'%.2f' % report_data['stock_summary']['final_stock']"/>
+                                        </td>
+                                        <td t-else=""/>
+                                    </t>
+                                </tr>
+
+                                <!-- ── Valoare TVA stoc final ─────────────── -->
+                                <tr class="rg-summary">
+                                    <td colspan="3" class="b">Valoare TVA stoc final</td>
+                                    <td class="r b">
+                                        <t t-esc="'%.2f' % report_data['stock_summary']['vat_value']"/>
+                                    </td>
+                                    <td/><td/>
+                                    <t t-foreach="all_tax_rates" t-as="tr_item">
+                                        <td/>
+                                    </t>
+                                </tr>
+
+                                <!-- ── Stoc final la pret de achizitie ───── -->
+                                <tr class="rg-summary">
+                                    <td colspan="3" class="b">
+                                        Stoc final la pret de achizitie fara TVA
+                                    </td>
+                                    <td class="r b">
+                                        <t t-esc="'%.2f' % report_data['stock_summary']['purchase_price']"/>
+                                    </td>
+                                    <td/><td/>
+                                    <t t-foreach="all_tax_rates" t-as="tr_item">
+                                        <td class="r b" t-if="tr_item_last">
+                                            <t t-esc="'%.2f' % report_data['stock_summary']['purchase_price']"/>
+                                        </td>
+                                        <td t-else=""/>
+                                    </t>
+                                </tr>
+
+                                <!-- ── Adaos comercial ────────────────────── -->
+                                <tr class="rg-summary">
+                                    <td colspan="3" class="b">Adaos comercial stoc final</td>
+                                    <td class="r b">
+                                        <t t-esc="'%.2f' % report_data['stock_summary']['commercial_markup']"/>
+                                    </td>
+                                    <td/><td/>
+                                    <t t-foreach="all_tax_rates" t-as="tr_item">
+                                        <td class="r b" t-if="tr_item_last">
+                                            <t t-esc="'%.2f' % report_data['stock_summary']['commercial_markup']"/>
+                                        </td>
+                                        <td t-else=""/>
+                                    </t>
+                                </tr>
+
+                            </tbody>
+                        </table>
+
+                        <!-- ── Footer ────────────────────────────────────── -->
+                        <div class="rg-footer">
+                            Raport realizat cu sistemul
+                            <strong>FranchiseTech.ro</strong>
+                            - Solutii complete pentru business
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </template>
+
+    </data>
+</odoo>

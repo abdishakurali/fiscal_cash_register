@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+*.so
+.DS_Store
+.env
+*.egg-info/
+dist/
+build/
+.idea/
+.vscode/
+*.sublime-workspace

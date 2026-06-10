@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Action for Register Report -->
+        <record id="action_register_report" model="ir.actions.act_window">
+            <field name="name">Registrul De Casa</field>
+            <field name="res_model">pos.session</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[('state', '=', 'closed')]</field>
+            <field name="context">{
+                'search_default_closed': 1,
+                'group_by': ['config_id']
+            }</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No closed sessions found
+                </p>
+                <p>
+                    Select a closed POS session to view the Registrul De Casa report.
+                </p>
+            </field>
+        </record>
+
+        <!-- Menu Item -->
+        <menuitem id="menu_register_report"
+            name="Registrul De Casa"
+            parent="point_of_sale.menu_point_rep"
+            action="action_register_report"
+            sequence="20" />
+
+
+        <!-- Tree View for Session Selection -->
+        <record id="view_pos_session_register_tree" model="ir.ui.view">
+            <field name="name">pos.session.register.tree</field>
+            <field name="model">pos.session</field>
+            <field name="arch" type="xml">
+                <list string="POS Sessions" decoration-info="state == 'opened'" decoration-success="state == 'closed'">
+                    <field name="name"/>
+                    <field name="config_id"/>
+                    <field name="user_id"/>
+                    <field name="start_at"/>
+                    <field name="stop_at"/>
+                    <field name="state"/>
+                    <field name="cash_register_balance_start"/>
+                    <field name="cash_register_balance_end_real"/>
+                    <button name="action_generate_register_report"
+                            type="object"
+                            string="Generate Registrul De Casa"
+                            class="btn-primary"
+                            icon="fa-file-pdf-o"
+                            invisible="state != 'closed'"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Form View for Session Details -->
+        <record id="view_pos_session_register_form" model="ir.ui.view">
+            <field name="name">pos.session.register.form</field>
+            <field name="model">pos.session</field>
+            <field name="arch" type="xml">
+                <form string="POS Session">
+                    <header>
+                        <button name="action_generate_register_report"
+                                type="object"
+                                string="Generate Registrul De Casa"
+                                class="btn-primary"
+                                icon="fa-file-pdf-o"
+                                invisible="state != 'closed'"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_generate_register_report"
+                                    type="object"
+                                    string="Registrul De Casa"
+                                    class="oe_stat_button"
+                                    icon="fa-file-pdf-o"
+                                    invisible="state != 'closed'"/>
+                        </div>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="config_id"/>
+                                <field name="user_id"/>
+                                <field name="start_at"/>
+                                <field name="stop_at"/>
+                            </group>
+                            <group>
+                                <field name="state"/>
+                                <field name="cash_register_balance_start"/>
+                                <field name="cash_register_balance_end_real"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Cash Register Details" name="cash_register">
+                                <field name="statement_line_ids" readonly="1">
+                                    <list>
+                                        <field name="name"/>
+                                        <field name="date"/>
+                                        <field name="amount"/>
+                                        <field name="ref"/>
+                                    </list>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Search View -->
+        <record id="view_pos_session_register_search" model="ir.ui.view">
+            <field name="name">pos.session.register.search</field>
+            <field name="model">pos.session</field>
+            <field name="arch" type="xml">
+                <search string="POS Sessions">
+                    <field name="name"/>
+                    <field name="config_id"/>
+                    <field name="user_id"/>
+                    <field name="start_at"/>
+                    <field name="stop_at"/>
+                    <filter string="Closed Sessions" name="closed" domain="[('state', '=', 'closed')]"/>
+                    <filter string="Open Sessions" name="opened" domain="[('state', '=', 'opened')]"/>
+                    <separator/>
+                    <group>
+                        <filter string="POS Config" name="config" context="{'group_by': 'config_id'}" domain="[]"/>
+                        <filter string="User" name="user" context="{'group_by': 'user_id'}" domain="[]"/>
+                        <filter string="Start Date" name="start_date" context="{'group_by': 'start_at:day'}" domain="[]"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+    </data>
+</odoo>

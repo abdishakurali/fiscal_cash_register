@@ -1,0 +1,1 @@
+Placeholder images for documentation

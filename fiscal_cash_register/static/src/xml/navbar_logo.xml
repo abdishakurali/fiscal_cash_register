@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="point_of_sale.template" xml:space="preserve">
+    <t t-name="point_of_sale_logo.Navbar" t-inherit="point_of_sale.Navbar"
+       t-inherit-mode="extension" owl="1">
+        <xpath expr="//div[hasclass('pos-logo')]" position="replace">
+            <div class="pos-logo mw-100 d-flex align-items-center justify-content-center">
+                <img t-if="pos.config.image"
+                     class="pos-logo-img h-100"
+                     t-attf-src="/web/image?model=pos.config&amp;field=image&amp;id={{ pos.config.id }}"/>
+                <img t-if="!pos.config.image"
+                     class="pos-logo-img h-100"
+                     t-attf-src="/web/image?model=res.company&amp;field=favicon&amp;id={{ pos.company.id }}"/>
+            </div>
+        </xpath>
+    </t>
+</templates>
