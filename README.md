@@ -1,53 +1,37 @@
-# Fiscal Cash Register Integration (Romania) — Odoo 19
+# Fiscal Net (FiscalNet Driver)
 
-[![Odoo 19](https://img.shields.io/badge/Odoo-19.0-purple)](https://odoo.com)
-[![License: LGPL-3](https://img.shields.io/badge/License-LGPL--3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
+Professional fiscal receipt printing integration for Odoo Point of Sale using the FiscalNet.ro driver.
 
-Professional Odoo bridge for physical fiscal printers using the [FiscalNet.ro](https://fiscalnet.ro) driver. Automates receipt printing, Z-reports, and legal cash book reporting for Romanian businesses.
+## 🚀 Overview
 
-## Features
+The **Fiscal Net** module provides a reliable bridge between Odoo POS and your physical fiscal cash register. Using the professional FiscalNet.ro driver, it automates the legal requirement of printing fiscal receipts in Romania, ensuring compliance with tax regulations.
 
-- 🖨️ **Fiscal Receipt Printing** — automatic receipt generation after every POS sale via FiscalNet API
-- 📊 **Z-Report** — daily fiscal closure report directly from the POS closing popup
-- 📒 **Registrul de Casă** — Romanian legal cash book (opening balance, cash in/out, closing balance)
-- 💵 **Cash In / Cash Out** — tracked cash operations with fiscal log
-- 🏷️ **SGR Support** — Romanian ecological deposit (Sistemul de Garanție-Returnare) product handling
-- 🖥️ **Local File or API** — choose between local file download or direct FiscalNet REST API integration
-- 🏢 **Multi-printer support** — Datecs, Daisy, Olivetti, Tremol, and all FiscalNet-compatible devices
+## ✨ Key Features
 
-## Compatibility
+- **Automated Printing**: Prints fiscal receipts immediately after order validation.
+- **Multiple Models**: Supports Datecs, Daisy, Olivetti, Partner, Sam4S, Tremol, and other major brands.
+- **API Integration**: Connects via FiscalNet API for modern, cloud-compatible operations.
+- **Financial Compliance**: Automatic SGR (System for Return of Goods) handling and tax ID mapping.
+- **Operational Reports**: Generate period closings (Z-Reports) and official Cash Book (Registrul de Casă) reports easily.
+- **Cash Management**: Built-in support for cash-in and cash-out operations.
 
-| Odoo Version | Branch  | Status     |
-|---|---|---|
-| 19.0         | `19.0`  | ✅ Active  |
-| 17.0         | `17.0`  | Legacy     |
+## 🛠 Technical Details
 
-## Installation
+- **Protocol**: Generates fiscal files (TXT/JSON) compatible with FiscalNet drivers.
+- **Integration**: Extends standard Odoo POS and Accounting modules.
+- **Stability**: Includes error handling and operation logging for audit trailing.
 
-1. Add this repo to your Odoo addons path
-2. Install the `fiscal_cash_register` module from Apps
-3. Configure the fiscal printer in POS → Configuration → Point of Sales → My Company
+## 👥 Who is it for?
 
-## Configuration
+- **Retail Stores**: High-volume receipt printing for shops and supermarkets.
+- **Hospitality**: Integrated billing for restaurants and cafes.
+- **Accounting Professionals**: Automated legal reporting for easier bookkeeping.
 
-| Field | Description |
-|---|---|
-| Enable Fiscal Printer | Toggle fiscal printer integration |
-| Fiscal Integration Method | `Local File` or `FiscalNet API` |
-| FiscalNet API Endpoint | e.g. `http://localhost:65400/api/Receipt` |
-| FiscalNet OS Type | Windows or Android |
-| Fiscal Files Directory | Output directory for local file mode |
+## 📧 Support
 
-## Odoo.sh Setup
+For custom driver setup or technical inquiries:
+- **Email**: [info@franchisetech.ro](mailto:info@franchisetech.ro)
+- **Website**: [franchisetech.ro](https://franchisetech.ro)
 
-1. Create a new Odoo.sh project
-2. Connect this GitHub repository
-3. The `fiscal_cash_register` module will be discovered automatically
-
-## Author
-
-**Franchise Tech** — [franchisetech.ro](https://franchisetech.ro)
-
-## License
-
-LGPL-3 — see [LICENSE](https://www.gnu.org/licenses/lgpl-3.0) for details.
+---
+Developed with ❤️ by **FranchiseTech**
