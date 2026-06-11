@@ -37,9 +37,6 @@ Key features:
         'wizard/management_report_wizard_views.xml',
     ],
     'assets': {
-        'web.assets_backend': [
-            'fiscal_cash_register/static/src/js/franchise_tech_title.js',
-        ],
         'point_of_sale._assets_pos': [
             'fiscal_cash_register/static/src/css/pos.css',
             'fiscal_cash_register/static/src/js/models.esm.js',
